@@ -2,6 +2,7 @@
 import { Router } from 'express';
 import { createPost, getPosts, getPostById, updatePost, deletePost, getPostsByAuthor } from '../controllers/post.controller';
 import { protect, admin, optionalAuth } from '../middleware/auth.middleware';
+import likeRoutes from './like.routes';
 
 const router = Router();
 
@@ -11,6 +12,8 @@ const router = Router();
  *   name: Posts
  *   description: Post management
  */
+
+router.use('/:id', likeRoutes);
 
 /**
  * @swagger
