@@ -1,5 +1,5 @@
 
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Query } from 'mongoose';
 
 export interface IPost extends Document {
   title: string;
@@ -8,21 +8,22 @@ export interface IPost extends Document {
   status: 'draft' | 'published';
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date;
 }
 
-const PostSchema: Schema = new Schema({
-  title: { type: String, required: true },
-  content: { type: String, required: true },
-  author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  status: { type: String, enum: ['draft', 'published'], default: 'draft' },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
+const PostSchema: Schema = new Schema(
+  {
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    status: { type: String, enum: ['draft', 'published'], default: 'draft' },
+    deletedAt: { type: Date, default: null },
+  },
+  { timestamps: true }
+);
 
-PostSchema.index({ title: 'text', content: 'text' });
-
-PostSchema.pre<IPost>('save', function (next) {
-  this.updatedAt = new Date();
+PostSchema.pre<Query<IPost, any>>(/^find/, function (next) {
+  this.where({ deletedAt: null });
   next();
 });
 

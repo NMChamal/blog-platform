@@ -1,6 +1,6 @@
 
 import { Router } from 'express';
-import { createPost, getPosts, getPostById, updatePost, deletePost } from '../controllers/post.controller';
+import { createPost, getPosts, getPostById, updatePost, deletePost, getPostsByAuthor } from '../controllers/post.controller';
 import { protect, admin, optionalAuth } from '../middleware/auth.middleware';
 
 const router = Router();
@@ -56,6 +56,32 @@ router.get('/', getPosts);
  *         description: Post not found
  */
 router.get('/:id', optionalAuth, getPostById);
+
+/**
+ * @swagger
+ * /api/posts/author/{authorId}:
+ *   get:
+ *     summary: Get posts by author
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: authorId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: A list of posts by the author
+ */
+router.get('/author/:authorId', getPostsByAuthor);
 
 /**
  * @swagger

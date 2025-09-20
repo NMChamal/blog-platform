@@ -40,6 +40,20 @@ export const getPostById = async (req: AuthRequest, res: Response, next: NextFun
   }
 };
 
+export const getPostsByAuthor = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const options = {
+      page: parseInt(page as string, 10),
+      limit: parseInt(limit as string, 10),
+    };
+    const result = await PostService.getPostsByAuthor(req.params.authorId, options);
+    res.status(200).json({ success: true, ...result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updatePost = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     if (!req.user) {

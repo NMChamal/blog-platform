@@ -1,6 +1,5 @@
-
-import { Router } from 'express';
-import { register, login } from '../controllers/auth.controller';
+import { Router } from "express";
+import { register, login, logout } from "../controllers/auth.controller";
 
 const router = Router();
 
@@ -42,7 +41,7 @@ const router = Router();
  *       400:
  *         description: Bad request
  */
-router.post('/register', register);
+router.post("/register", register);
 
 /**
  * @swagger
@@ -79,6 +78,18 @@ router.post('/register', register);
  *       400:
  *         description: Invalid credentials
  */
-router.post('/login', login);
+router.post("/login", login);
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Logout a user
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: User logged out successfully
+ */
+router.post("/logout", logout);
 
 export default router;
