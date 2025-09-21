@@ -1,6 +1,6 @@
-
 import { Request, Response, NextFunction } from 'express';
-import logger from '../infrastructure/logger';
+import { container } from "tsyringe";
+import { Logger } from '../infrastructure/logger';
 
 export class AppError extends Error {
   public readonly statusCode: number;
@@ -13,6 +13,8 @@ export class AppError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
+
+const logger = container.resolve(Logger);
 
 const errorHandler = (err: AppError, req: Request, res: Response, next: NextFunction) => {
   const statusCode = err.statusCode || 500;

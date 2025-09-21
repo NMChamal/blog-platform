@@ -6,31 +6,41 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const fetcher = async (url: string, method: string, body?: any) => {
   const { token } = useAuthStore.getState();
   const fullUrl = `${BASE_URL}${url}`;
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-  };
+  console.log('Fetching from:', fullUrl);
+  const headers: HeadersInit = {};
+
+  if (!(body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
+
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(fullUrl, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : null,
-  });
+  try {
+    const res = await fetch(fullUrl, {
+      method,
+      headers,
+      body: body instanceof FormData ? body : body ? JSON.stringify(body) : null,
+    });
 
-  if (!res.ok) {
-    const error = new Error('An error occurred while fetching the data.');
-    // Attach extra info to the error object.
-    error.info = await res.json();
-    error.status = res.status;
+    if (!res.ok) {
+      const error = new Error('An error occurred while fetching the data.');
+      // Attach extra info to the error object.
+      error.info = await res.json();
+      error.status = res.status;
+      throw error;
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('API Error:', error);
     throw error;
   }
-
-  return res.json();
 };
 
 export const useApi = (url: string) => {
+  console.log('useApi called with url:', url);
   const { data, error, isLoading, mutate } = useSWR(url, (url) => fetcher(url, 'GET'));
 
   const post = (body: any) => fetcher(url, 'POST', body);

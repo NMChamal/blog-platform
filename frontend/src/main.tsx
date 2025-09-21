@@ -6,16 +6,32 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
+import CreatePostPage from './pages/CreatePostPage';
+import UpdatePostPage from './pages/UpdatePostPage';
+import PostPage from './pages/PostPage';
+import ErrorPage from './pages/ErrorPage';
+import MyAccountPage from './pages/MyAccountPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
+      { 
+        element: <ProtectedRoute />,
+        children: [
+          { path: 'my-account', element: <MyAccountPage /> },
+          { path: 'posts/create', element: <CreatePostPage /> },
+          { path: 'posts/:id/edit', element: <UpdatePostPage /> },
+        ]
+      },
+      { path: 'posts/:id', element: <PostPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

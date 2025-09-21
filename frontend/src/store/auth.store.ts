@@ -1,11 +1,13 @@
 import {create} from 'zustand';
 import { persist } from 'zustand/middleware';
+import { jwtDecode } from "jwt-decode";
 
 interface AuthState {
   token: string | null;
-  user: any | null; // Replace 'any' with a proper User type
+  role: string | null;
+  userId: string | null;
   isAuthenticated: boolean;
-  setToken: (token: string, user: any) => void; // Replace 'any' with a proper User type
+  setToken: (token: string) => void;
   clearAuth: () => void;
 }
 
@@ -13,13 +15,15 @@ const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       token: null,
-      user: null,
+      role: null,
+      userId: null,
       isAuthenticated: false,
-      setToken: (token, user) => {
-        set({ token, user, isAuthenticated: true });
+      setToken: (token) => {
+        const decoded = jwtDecode<{ id: string, role: string }>(token);
+        set({ token, role: decoded.role, userId: decoded.id, isAuthenticated: true });
       },
       clearAuth: () => {
-        set({ token: null, user: null, isAuthenticated: false });
+        set({ token: null, role: null, userId: null, isAuthenticated: false });
       },
     }),
     {

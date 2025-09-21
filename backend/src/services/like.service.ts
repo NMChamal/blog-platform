@@ -1,43 +1,39 @@
-import { Like, ILike } from "../models";
-import { IUser } from "../models";
-import { AppError } from "../middleware/errorHandler";
+import { injectable } from "tsyringe";
+import Like, { ILike } from "../models/like.model";
+import { IUser } from "../models/user.model";
 
-export const likePost = async (postId: string, user: IUser): Promise<ILike> => {
-  const existingLike = await Like.findOne({ post: postId, user: user._id });
-  if (existingLike) {
-    throw new AppError("Post already liked", 400);
+@injectable()
+export class LikeService {
+  public async toggleLike(postId: string, user: IUser): Promise<boolean> {
+    const existingLike = await Like.findOne({ post: postId, user: user._id as any });
+
+    if (existingLike) {
+      await existingLike.deleteOne();
+      return false; // unliked
+    } else {
+      const like = new Like({ post: postId, user: user._id as any });
+      await like.save();
+      return true; // liked
+    }
   }
 
-  const like = new Like({ post: postId, user: user._id });
-  await like.save();
-  return like;
-};
-
-export const unlikePost = async (
-  postId: string,
-  user: IUser
-): Promise<void> => {
-  const like = await Like.findOneAndDelete({ post: postId, user: user._id });
-  if (!like) {
-    throw new AppError("Post not liked yet", 400);
+  public async getLikeCountForPost(postId: string): Promise<number> {
+    return Like.countDocuments({ post: postId });
   }
-};
 
-export const getLikeCountForPost = async (postId: string): Promise<number> => {
-  return Like.countDocuments({ post: postId });
-};
+  public async checkIfUserLikedPost(
+    postId: string,
+    user: IUser | undefined
+  ): Promise<boolean> {
+    if (!user) {
+      return false;
+    }
+    const like = await Like.findOne({ post: postId, user: user._id as any });
+    return !!like;
+  }
 
-export const checkIfUserLikedPost = async (
-  postId: string,
-  user: IUser
-): Promise<boolean> => {
-  const like = await Like.findOne({ post: postId, user: user._id });
-  return !!like;
-};
-
-export const getUsersWhoLikedPost = async (
-  postId: string
-): Promise<IUser[]> => {
-  const likes = await Like.find({ post: postId }).populate("user");
-  return likes.map((like) => like.user as IUser);
-};
+  public async getUsersWhoLikedPost(postId: string): Promise<IUser[]> {
+    const likes = await Like.find({ post: postId }).populate("user");
+    return likes.map((like) => like.user as any);
+  }
+}

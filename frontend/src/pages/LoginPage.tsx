@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useApi } from "../hooks/useApi";
 import useAuthStore from "../store/auth.store";
 
@@ -17,7 +17,7 @@ const LoginPage = () => {
 
     try {
       const res = await post({ email, password });
-      setToken(res.data.token, {}); // We don't get the user object from the login endpoint
+      setToken(res.data.token);
       navigate("/");
     } catch (err: any) {
       console.log(err);
@@ -62,6 +62,12 @@ const LoginPage = () => {
             Login
           </button>
         </form>
+        <p className="text-center text-sm text-gray-600">
+          Don't have an account?{" "}
+          <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+            Register
+          </Link>
+        </p>
       </div>
     </div>
   );

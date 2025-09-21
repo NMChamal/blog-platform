@@ -1,8 +1,16 @@
-
-import { Router } from 'express';
-import { createPost, getPosts, getPostById, updatePost, deletePost, getPostsByAuthor } from '../controllers/post.controller';
-import { protect, admin, optionalAuth } from '../middleware/auth.middleware';
-import likeRoutes from './like.routes';
+import { Router } from "express";
+import {
+  createPost,
+  getPosts,
+  getPostById,
+  updatePost,
+  deletePost,
+  getPostsByAuthor,
+  getMyPosts,
+} from "../controllers/post.controller";
+import { protect, admin, optionalAuth } from "../middleware/auth.middleware";
+import likeRoutes from "./like.routes";
+import commentRoutes from "./comment.routes";
 
 const router = Router();
 
@@ -13,7 +21,8 @@ const router = Router();
  *   description: Post management
  */
 
-router.use('/:id', likeRoutes);
+router.use("/:id", likeRoutes);
+router.use("/:id/comments", commentRoutes);
 
 /**
  * @swagger
@@ -38,7 +47,32 @@ router.use('/:id', likeRoutes);
  *       200:
  *         description: A list of posts
  */
-router.get('/', getPosts);
+router.get("/", getPosts);
+
+/**
+ * @swagger
+ * /api/posts/my-posts:
+ *   get:
+ *     summary: Get all posts by the logged in user
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: A list of posts
+ *       401:
+ *         description: Not authorized
+ */
+router.get("/my-posts", protect, getMyPosts);
 
 /**
  * @swagger
@@ -58,7 +92,7 @@ router.get('/', getPosts);
  *       404:
  *         description: Post not found
  */
-router.get('/:id', optionalAuth, getPostById);
+router.get("/:id", optionalAuth, getPostById);
 
 /**
  * @swagger
@@ -84,7 +118,7 @@ router.get('/:id', optionalAuth, getPostById);
  *       200:
  *         description: A list of posts by the author
  */
-router.get('/author/:authorId', getPostsByAuthor);
+router.get("/author/:authorId", getPostsByAuthor);
 
 /**
  * @swagger
@@ -117,7 +151,7 @@ router.get('/author/:authorId', getPostsByAuthor);
  *       401:
  *         description: Not authorized
  */
-router.post('/', protect, createPost);
+router.post("/", protect, createPost);
 
 /**
  * @swagger
@@ -155,7 +189,7 @@ router.post('/', protect, createPost);
  *       404:
  *         description: Post not found
  */
-router.put('/:id', protect, updatePost);
+router.put("/:id", protect, updatePost);
 
 /**
  * @swagger
@@ -179,6 +213,6 @@ router.put('/:id', protect, updatePost);
  *       404:
  *         description: Post not found
  */
-router.delete('/:id', protect, deletePost);
+router.delete("/:id", protect, deletePost);
 
 export default router;

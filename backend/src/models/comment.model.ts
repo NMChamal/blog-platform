@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IComment extends Document {
+  _id: any;
   post: mongoose.Types.ObjectId;
   user: mongoose.Types.ObjectId;
   parent?: mongoose.Types.ObjectId;
@@ -17,6 +18,8 @@ const CommentSchema: Schema = new Schema({
   createdAt: { type: Date, default: Date.now },
   deletedAt: { type: Date, default: null },
 });
+
+CommentSchema.index({ post: 1, createdAt: -1 });
 
 // CommentSchema.pre<any>(/^find/, function (next) {
 //   this.where({ deletedAt: null });

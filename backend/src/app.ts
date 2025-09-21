@@ -1,36 +1,49 @@
+import "./container";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
-import { connectDB } from "./infrastructure/database";
+import { container } from "tsyringe";
+import { Database } from "./infrastructure/database";
+import { Logger } from "./infrastructure/logger";
 import { swaggerSpec } from "./infrastructure/swagger";
-import logger from "./infrastructure/logger";
 import errorHandler from "./middleware/errorHandler";
+import { rateLimiter } from "./middleware/rateLimiter";
 
 import routes from "./routes";
+import uploadRoutes from "./routes/upload.routes";
 
-dotenv.config();
+dotenv.config({ path: './backend/.env' });
 
 const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
+app.use(rateLimiter);
 
-connectDB();
+app.use('/uploads', express.static('public/uploads'));
 
-app.use("/api", routes);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+const logger = container.resolve(Logger);
+const database = container.resolve(Database);
 
-app.get("/", (req, res) => {
-  res.send("Blog Platform API");
-});
+const startServer = async () => {
+  await database.connect();
 
-app.use(errorHandler);
+  app.use("/api", routes);
+  app.use("/api/upload", uploadRoutes);
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-const server = app.listen(port, () => {
-  logger.info(`Server is running on port ${port}`);
-  logger.info(`API docs available at http://localhost:${port}/api-docs`);
-});
+  app.get("/", (req, res) => {
+    res.send("Blog Platform API");
+  });
 
-export default server;
+  app.use(errorHandler);
+
+  app.listen(port, () => {
+    logger.info(`Server is running on port ${port}`);
+    logger.info(`API docs available at http://localhost:${port}/api-docs`);
+  });
+};
+
+startServer();

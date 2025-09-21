@@ -1,6 +1,11 @@
-import { Router } from 'express';
-import { likePost, unlikePost, getLikeCountForPost, checkIfUserLikedPost, getUsersWhoLikedPost } from '../controllers/like.controller';
-import { protect } from '../middleware/auth.middleware';
+import { Router } from "express";
+import {
+  toggleLike,
+  getLikeCountForPost,
+  checkIfUserLikedPost,
+  getUsersWhoLikedPost,
+} from "../controllers/like.controller";
+import { protect, optionalAuth } from "../middleware/auth.middleware";
 
 const router = Router({ mergeParams: true });
 
@@ -15,7 +20,7 @@ const router = Router({ mergeParams: true });
  * @swagger
  * /api/posts/{id}/like:
  *   post:
- *     summary: Like a post
+ *     summary: Toggle like on a post
  *     tags: [Likes]
  *     security:
  *       - bearerAuth: []
@@ -26,38 +31,12 @@ const router = Router({ mergeParams: true });
  *         schema:
  *           type: string
  *     responses:
- *       201:
- *         description: Post liked successfully
- *       400:
- *         description: Post already liked
+ *       200:
+ *         description: Like status toggled successfully
  *       401:
  *         description: Not authorized
  */
-router.post('/like', protect, likePost);
-
-/**
- * @swagger
- * /api/posts/{id}/like:
- *   delete:
- *     summary: Unlike a post
- *     tags: [Likes]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       204:
- *         description: Post unliked successfully
- *       400:
- *         description: Post not liked yet
- *       401:
- *         description: Not authorized
- */
-router.delete('/like', protect, unlikePost);
+router.post("/like", protect, toggleLike);
 
 /**
  * @swagger
@@ -75,7 +54,7 @@ router.delete('/like', protect, unlikePost);
  *       200:
  *         description: Like count
  */
-router.get('/likes/count', getLikeCountForPost);
+router.get("/likes/count", getLikeCountForPost);
 
 /**
  * @swagger
@@ -83,8 +62,6 @@ router.get('/likes/count', getLikeCountForPost);
  *   get:
  *     summary: Check if current user liked a post
  *     tags: [Likes]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -97,7 +74,7 @@ router.get('/likes/count', getLikeCountForPost);
  *       401:
  *         description: Not authorized
  */
-router.get('/like', protect, checkIfUserLikedPost);
+router.get("/like", optionalAuth, checkIfUserLikedPost);
 
 /**
  * @swagger
@@ -115,6 +92,6 @@ router.get('/like', protect, checkIfUserLikedPost);
  *       200:
  *         description: A list of users
  */
-router.get('/likes', getUsersWhoLikedPost);
+router.get("/likes", optionalAuth, getUsersWhoLikedPost);
 
 export default router;

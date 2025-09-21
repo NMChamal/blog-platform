@@ -1,23 +1,41 @@
 import { useApi } from "../hooks/useApi";
+import useAuthStore from "../store/auth.store";
+import { Link } from "react-router-dom";
+import PostCard from "../components/PostCard";
+import PostListItem from "../components/PostListItem";
+import useViewStore from "../store/view.store";
 
 const HomePage = () => {
   const { data, error, isLoading } = useApi("/api/posts");
+  const { isAuthenticated, role } = useAuthStore();
+  const { view, toggleView } = useViewStore();
+
+  console.log("data", data);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading posts</div>;
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-4">Latest Posts</h1>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {data?.posts.map((post: any) => (
-          <div key={post._id} className="p-4 border rounded-lg shadow-sm">
-            <h2 className="text-xl font-bold">{post.title}</h2>
-            <p className="text-gray-600">by {post.author.name}</p>
-            <p className="mt-2">{post.content.substring(0, 100)}...</p>
-          </div>
-        ))}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-3xl font-bold">Latest Posts</h1>
+        <button onClick={toggleView} className="px-4 py-2 font-bold text-white bg-gray-600 rounded-md hover:bg-gray-700">
+          {view === 'grid' ? 'List View' : 'Grid View'}
+        </button>
       </div>
+      {view === 'grid' ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {data?.posts.map((post: any) => (
+            <PostCard key={post._id} post={post} />
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {data?.posts.map((post: any) => (
+            <PostListItem key={post._id} post={post} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

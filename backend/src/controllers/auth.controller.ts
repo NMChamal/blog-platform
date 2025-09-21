@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { authService } from "../services";
+import { container } from "tsyringe";
+import { AuthService } from "../services/auth.service";
+
+const authService = container.resolve(AuthService);
 
 export const register = async (
   req: Request,

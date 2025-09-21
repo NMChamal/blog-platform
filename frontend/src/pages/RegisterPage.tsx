@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
-import useAuthStore from '../store/auth.store';
 
 const RegisterPage = () => {
   const [name, setName] = useState('');
@@ -10,14 +9,13 @@ const RegisterPage = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { post } = useApi('/api/auth/register');
-  const { setToken } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     try {
-      const res = await post({ name, email, password });
+      await post({ name, email, password });
       // The register endpoint does not return a token, so we will redirect to login
       navigate('/login');
     } catch (err: any) {
@@ -68,6 +66,12 @@ const RegisterPage = () => {
             Register
           </button>
         </form>
+        <p className="text-center text-sm text-gray-600">
+          Already have an account?{" "}
+          <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            Login
+          </Link>
+        </p>
       </div>
     </div>
   );

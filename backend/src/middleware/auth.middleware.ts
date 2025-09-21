@@ -3,11 +3,13 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User, { IUser } from '../models/user.model';
 import dotenv from 'dotenv';
-import logger from '../infrastructure/logger';
+import { container } from "tsyringe";
+import { Logger } from '../infrastructure/logger';
 import { AppError } from './errorHandler';
 
 dotenv.config();
 
+const logger = container.resolve(Logger);
 const jwtSecret = process.env.JWT_SECRET;
 
 if (!jwtSecret) {
