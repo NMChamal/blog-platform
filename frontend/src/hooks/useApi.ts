@@ -1,5 +1,6 @@
 import useSWR from 'swr';
 import useAuthStore from '../store/auth.store';
+import { handleError } from '../services/error.service';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -34,7 +35,7 @@ const fetcher = async (url: string, method: string, body?: any) => {
 
     return res.json();
   } catch (error) {
-    console.error('API Error:', error);
+    handleError(error);
     throw error;
   }
 };

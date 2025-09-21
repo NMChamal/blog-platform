@@ -9,9 +9,8 @@ const UpdatePostPage = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [status, setStatus] = useState<'draft' | 'published'>('draft');
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { data, put } = useApi(`/api/posts/${id}`);
+  const { data, put, error } = useApi(`/api/posts/${id}`);
 
   useEffect(() => {
     if (data) {
@@ -23,14 +22,13 @@ const UpdatePostPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     try {
       const sanitizedContent = DOMPurify.sanitize(content);
       await put({ title, content: sanitizedContent, status });
       navigate(`/posts/${id}`);
     } catch (err: any) {
-      setError(err.info?.message || 'An error occurred');
+      // The error is handled by the centralized error handler in useApi.ts
     }
   };
 
@@ -63,7 +61,7 @@ const UpdatePostPage = () => {
             <option value="published">Published</option>
           </select>
         </div>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-red-500 text-sm">An error occurred while updating the post.</p>}
         <button
           type="submit"
           className="w-full px-4 py-2 font-bold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

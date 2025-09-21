@@ -6,6 +6,8 @@ import { useState } from 'react';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import { HeartIcon as HeartIconOutline } from '@heroicons/react/24/outline';
 import Comment from '../components/Comment';
+import { formatTimeAgo } from '../utils/date';
+import Error from '../components/Error';
 
 const PostPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,12 +22,13 @@ const PostPage = () => {
   const [commentContent, setCommentContent] = useState('');
 
   if (postIsLoading || likeIsLoading || likeCountIsLoading || commentsIsLoading) return <div>Loading...</div>;
-  if (postError) console.log('postError', postError);
-  if (likeError) console.log('likeError', likeError);
-  if (likeCountError) console.log('likeCountError', likeCountError);
-  if (commentsError) console.log('commentsError', commentsError);
-  console.log('commentsData', commentsData);
-  if (postError || likeError || likeCountError || commentsError) return <div>Error loading post</div>;
+  if (postError) {
+    if (postError.status === 404) {
+      return <Error message="Post not found" />;
+    }
+    return <Error message="Error loading post" />;
+  }
+  if (likeError || likeCountError || commentsError) return <Error message="Error loading post" />;
 
   const sanitizedContent = DOMPurify.sanitize(postData.data.content);
 
@@ -60,7 +63,13 @@ const PostPage = () => {
           </Link>
         )}
       </div>
-      <p className="text-gray-600 mb-4">by {postData.data.author.name}</p>
+      <div className="flex items-center space-x-2 text-sm text-gray-500 mb-4">
+        <Link to={`/author/${postData.data.author._id}`} className="text-indigo-600 hover:underline">
+          by {postData.data.author.name}
+        </Link>
+        <span>-</span>
+        <span>{formatTimeAgo(postData.data.createdAt)}</span>
+      </div>
       <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
       <div className="mt-4 flex items-center space-x-4">
         <button onClick={handleLike} className="flex items-center space-x-2 text-gray-600 hover:text-red-500">

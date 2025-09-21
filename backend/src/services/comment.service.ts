@@ -1,4 +1,5 @@
 import { injectable } from "tsyringe";
+import mongoose from "mongoose";
 import Comment, { IComment } from "../models/comment.model";
 import { IUser } from "../models/user.model";
 import { AppError } from "../middleware/errorHandler";
@@ -28,9 +29,9 @@ export class CommentService {
 
   public async getCommentsByPost(postId: string): Promise<any[]> {
     const comments = await Comment.find({
-      post: postId,
+      post: new mongoose.Types.ObjectId(postId),
       withDeleted: true,
-    }).populate("user", "name _id");
+    }).populate("user", "name _id").sort({ createdAt: 1 });
 
     const commentsById: { [key: string]: any } = {};
     comments.forEach((comment: IComment) => {

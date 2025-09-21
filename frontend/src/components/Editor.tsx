@@ -6,9 +6,10 @@ import { useApi } from '../hooks/useApi';
 interface EditorProps {
   value: string;
   onChange: (value: string) => void;
+  height?: string;
 }
 
-const Editor = ({ value, onChange }: EditorProps) => {
+const Editor = ({ value, onChange, height }: EditorProps) => {
   const quillRef = useRef<ReactQuill>(null);
   const { post } = useApi('/api/upload');
 
@@ -68,6 +69,7 @@ const Editor = ({ value, onChange }: EditorProps) => {
       value={value}
       onChange={onChange}
       modules={modules}
+      style={{ height: height || '12rem' }}
     />
   );
 };

@@ -7,7 +7,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-gray-800 p-4">
+    <nav className="bg-gray-800 p-4 sticky top-0 z-10">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="text-white text-lg font-bold">Blog</Link>
         <div className="hidden md:block">

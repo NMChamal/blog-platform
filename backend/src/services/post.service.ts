@@ -1,6 +1,7 @@
 import { injectable } from "tsyringe";
+import mongoose from "mongoose";
 import Post, { IPost } from "../models/post.model";
-import { IUser } from "../models/user.model";
+import User, { IUser } from "../models/user.model";
 import { AppError } from "../middleware/errorHandler";
 
 @injectable()
@@ -95,6 +96,10 @@ export class PostService {
   }
 
   public async getPostById(id: string, user?: IUser): Promise<IPost> {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new AppError("Invalid post ID", 400);
+    }
+
     const post = await Post.findById(id).populate("author", "name _id");
 
     if (!post) {
@@ -120,7 +125,12 @@ export class PostService {
   ): Promise<{ posts: IPost[]; totalPages: number; currentPage: number }> {
     const { page = 1, limit = 10 } = options;
 
-    const query = { author: authorId };
+    const author = await User.findById(authorId);
+    if (!author) {
+      throw new AppError("Author not found", 404);
+    }
+
+    const query = { author: new mongoose.Types.ObjectId(authorId) };
 
     const posts = await Post.aggregate([
       { $match: query },

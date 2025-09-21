@@ -1,22 +1,27 @@
+import { useParams } from "react-router-dom";
 import { useApi } from "../hooks/useApi";
-import useAuthStore from "../store/auth.store";
-import { Link } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import PostListItem from "../components/PostListItem";
 import useViewStore from "../store/view.store";
+import Error from "../components/Error";
 
-const HomePage = () => {
-  const { data, error, isLoading } = useApi("/api/posts");
-  const { isAuthenticated, role } = useAuthStore();
+const AuthorPage = () => {
+  const { authorId } = useParams<{ authorId: string }>();
+  const { data, error, isLoading } = useApi(`/api/posts/author/${authorId}`);
   const { view, toggleView } = useViewStore();
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading posts</div>;
+  if (error) {
+    if (error.status === 404) {
+      return <Error message="Author not found" />;
+    }
+    return <Error message="Error loading posts" />;
+  }
 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold">Latest Posts</h1>
+        <h1 className="text-3xl font-bold">Posts by {data?.posts[0]?.author.name}</h1>
         <button onClick={toggleView} className="px-4 py-2 font-bold text-white bg-gray-600 rounded-md hover:bg-gray-700">
           {view === 'grid' ? 'List View' : 'Grid View'}
         </button>
@@ -38,4 +43,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default AuthorPage;

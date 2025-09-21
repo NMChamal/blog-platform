@@ -10,7 +10,11 @@ const MyAccountPage = () => {
   const { view, toggleView } = useViewStore();
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading posts</div>;
+  if (error) {
+    // The error is handled by the centralized error handler in useApi.ts
+    // You can optionally display a generic error message here
+    return <div>Error loading posts</div>;
+  }
 
   return (
     <div>

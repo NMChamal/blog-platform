@@ -12,6 +12,7 @@ import PostPage from './pages/PostPage';
 import ErrorPage from './pages/ErrorPage';
 import MyAccountPage from './pages/MyAccountPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import AuthorPage from './pages/AuthorPage';
 import './index.css';
 
 const router = createBrowserRouter([
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
         ]
       },
       { path: 'posts/:id', element: <PostPage /> },
+      { path: 'author/:authorId', element: <AuthorPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

@@ -4,6 +4,7 @@ import parse from 'html-react-parser';
 import { useApi } from '../hooks/useApi';
 import { useDeleteApi } from '../hooks/useDeleteApi';
 import useAuthStore from '../store/auth.store';
+import { formatTimeAgo } from '../utils/date';
 
 interface CommentProps {
   comment: {
@@ -13,6 +14,7 @@ interface CommentProps {
       _id: string;
       name: string;
     };
+    createdAt: string;
     children: CommentProps['comment'][];
   };
   postId: string;
@@ -57,7 +59,11 @@ const Comment = ({ comment, postId, mutateComments }: CommentProps) => {
 
   return (
     <div className="ml-4 pl-4 border-l-2 border-gray-200">
-      <p className="text-gray-600">by {comment.user.name}</p>
+      <div className="flex items-center space-x-2 text-sm text-gray-500">
+        <span>by {comment.user.name}</span>
+        <span>-</span>
+        <span>{formatTimeAgo(comment.createdAt)}</span>
+      </div>
       {!showEditForm ? (
         <div className="mt-2"><div>{parse(comment.content)}</div></div>
       ) : (
