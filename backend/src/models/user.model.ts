@@ -19,6 +19,8 @@ const UserSchema: Schema = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
+UserSchema.index({ name: 'text' });
+
 UserSchema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password") || !this.password) {
     return next();

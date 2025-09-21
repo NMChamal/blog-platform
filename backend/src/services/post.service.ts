@@ -35,8 +35,17 @@ export class PostService {
     const { page = 1, limit = 10, search } = options;
 
     const query: any = { status: "published" };
+
     if (search) {
-      query.$text = { $search: search };
+      const searchRegex = new RegExp(search, "i");
+      const authors = await User.find({ name: searchRegex });
+      const authorIds = authors.map((author) => author._id);
+
+      query.$or = [
+        { title: searchRegex },
+        { content: searchRegex },
+        { author: { $in: authorIds } },
+      ];
     }
 
     const posts = await Post.aggregate([

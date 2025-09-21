@@ -1,12 +1,14 @@
 import { useApi } from "../hooks/useApi";
 import useAuthStore from "../store/auth.store";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import PostListItem from "../components/PostListItem";
 import useViewStore from "../store/view.store";
 
 const HomePage = () => {
-  const { data, error, isLoading } = useApi("/api/posts");
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
+  const { data, error, isLoading } = useApi(`/api/posts?search=${searchQuery}`);
   const { isAuthenticated, role } = useAuthStore();
   const { view, toggleView } = useViewStore();
 
@@ -21,6 +23,9 @@ const HomePage = () => {
           {view === 'grid' ? 'List View' : 'Grid View'}
         </button>
       </div>
+      {data?.posts.length === 0 && searchQuery && (
+        <p>No posts found for the search term: {searchQuery}</p>
+      )}
       {view === 'grid' ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {data?.posts.map((post: any) => (
