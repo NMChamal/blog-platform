@@ -12,6 +12,7 @@ import { rateLimiter } from "./middleware/rateLimiter";
 
 import routes from "./routes";
 import uploadRoutes from "./routes/upload.routes";
+import userRoutes from "./routes/user.routes";
 
 dotenv.config({ path: './backend/.env' });
 
@@ -32,6 +33,7 @@ const startServer = async () => {
 
   app.use("/api", routes);
   app.use("/api/upload", uploadRoutes);
+  app.use("/api/users", userRoutes);
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
   app.get("/", (req, res) => {

@@ -7,34 +7,39 @@ import Error from "../components/Error";
 
 const AuthorPage = () => {
   const { authorId } = useParams<{ authorId: string }>();
-  const { data, error, isLoading } = useApi(`/api/posts/author/${authorId}`);
+  const { data: postsData, error: postsError, isLoading: postsIsLoading } = useApi(`/api/posts/author/${authorId}`);
+  const { data: authorData, error: authorError, isLoading: authorIsLoading } = useApi(`/api/users/${authorId}`);
   const { view, toggleView } = useViewStore();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) {
-    if (error.status === 404) {
+  if (postsIsLoading || authorIsLoading) return <div>Loading...</div>;
+  if (postsError || authorError) {
+    if (postsError?.status === 404 || authorError?.status === 404) {
       return <Error message="Author not found" />;
     }
-    return <Error message="Error loading posts" />;
+    return <Error message="Error loading data" />;
   }
 
   return (
     <div>
+      <div className="mb-4">
+        <h1 className="text-3xl font-bold">{authorData?.data.name}</h1>
+        <p className="text-gray-600">{authorData?.data.description}</p>
+      </div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold">Posts by {data?.posts[0]?.author.name}</h1>
+        <h2 className="text-2xl font-bold">Posts</h2>
         <button onClick={toggleView} className="px-4 py-2 font-bold text-white bg-gray-600 rounded-md hover:bg-gray-700">
           {view === 'grid' ? 'List View' : 'Grid View'}
         </button>
       </div>
       {view === 'grid' ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {data?.posts.map((post: any) => (
+          {postsData?.posts.map((post: any) => (
             <PostCard key={post._id} post={post} />
           ))}
         </div>
       ) : (
         <div className="space-y-4">
-          {data?.posts.map((post: any) => (
+          {postsData?.posts.map((post: any) => (
             <PostListItem key={post._id} post={post} />
           ))}
         </div>

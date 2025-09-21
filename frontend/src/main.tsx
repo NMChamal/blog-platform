@@ -13,6 +13,7 @@ import ErrorPage from './pages/ErrorPage';
 import MyAccountPage from './pages/MyAccountPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthorPage from './pages/AuthorPage';
+import EditProfilePage from './pages/EditProfilePage';
 import './index.css';
 
 const router = createBrowserRouter([
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           { path: 'my-account', element: <MyAccountPage /> },
+          { path: 'my-account/edit', element: <EditProfilePage /> },
           { path: 'posts/create', element: <CreatePostPage /> },
           { path: 'posts/:id/edit', element: <UpdatePostPage /> },
         ]

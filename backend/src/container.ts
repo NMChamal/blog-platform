@@ -3,6 +3,7 @@ import { container } from "tsyringe";
 import { Database } from "./infrastructure/database";
 import { Logger } from "./infrastructure/logger";
 import { AuthService } from "./services/auth.service";
+import { UserService } from "./services/user.service";
 
 // Register the logger
 container.register<Logger>("Logger", {
@@ -17,4 +18,7 @@ container.register<Database>("Database", {
 // Register services
 container.register<AuthService>("AuthService", {
     useClass: AuthService,
+});
+container.register<UserService>("UserService", {
+    useClass: UserService,
 });
