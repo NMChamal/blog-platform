@@ -35,7 +35,7 @@ const Editor = ({ value, onChange, height }: EditorProps) => {
         if (quill) {
           urls.forEach((url: string) => {
             const range = quill.getSelection(true);
-            quill.insertEmbed(range.index, 'image', url);
+            quill.insertEmbed(range.index, 'image', `${import.meta.env.VITE_API_BASE_URL}${url}`);
           });
         }
       } catch (error) {

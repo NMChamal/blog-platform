@@ -20,7 +20,7 @@ const CreatePostPage = () => {
     }
 
     try {
-      const sanitizedContent = DOMPurify.sanitize(content);
+      const sanitizedContent = DOMPurify.sanitize(content.replace(new RegExp(import.meta.env.VITE_API_BASE_URL, 'g'), ''));
       await post({ title, content: sanitizedContent, status });
       navigate("/");
     } catch (err: any) {

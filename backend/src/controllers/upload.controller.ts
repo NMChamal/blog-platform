@@ -12,7 +12,6 @@ export const uploadImages = async (req: Request, res: Response, next: NextFuncti
 
     const files = req.files as Express.Multer.File[];
     const urls: string[] = [];
-    const baseUrl = process.env.BASE_URL || '';
 
     for (const file of files) {
       const filename = `image-${Date.now()}-${Math.round(Math.random() * 1E9)}.jpeg`;
@@ -25,7 +24,7 @@ export const uploadImages = async (req: Request, res: Response, next: NextFuncti
         .jpeg({ quality: 90 })
         .toFile(filepath);
 
-      urls.push(`${baseUrl}/uploads/${filename}`);
+      urls.push(`/uploads/${filename}`);
     }
 
     res.status(201).json({ success: true, data: { urls } });
