@@ -16,7 +16,6 @@ const PostPage = () => {
     data: postData,
     error: postError,
     isLoading: postIsLoading,
-    mutate: mutatePost,
   } = useApi(`/api/posts/${id}`);
   const {
     data: likeData,
