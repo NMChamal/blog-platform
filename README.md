@@ -92,17 +92,17 @@ This is a full-stack blog platform with authentication, post management, comment
 ### Running the Application
 
 1.  **Start the backend server:**
-    -   Navigate to the `backend` directory.
-    -   Run the following command:
-        ```
-        npm run dev
-        ```
+    - Navigate to the `backend` directory.
+    - Run the following command:
+      ```
+      npm run dev
+      ```
 2.  **Start the frontend development server:**
-    -   Navigate to the `frontend` directory.
-    -   Run the following command:
-        ```
-        npm run dev
-        ```
+    - Navigate to the `frontend` directory.
+    - Run the following command:
+      ```
+      npm run dev
+      ```
 
 ## Test Coverage
 
